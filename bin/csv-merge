@@ -1,0 +1,23 @@
+#!/usr/local/bin/php
+<?php
+
+use Carpatin\TableTools\Command\ArgumentConverter\CsvMergeArgumentConverter;
+use Carpatin\TableTools\Command\CommandProcessorLocator;
+use Carpatin\TableTools\IO\CsvReader;
+use Carpatin\TableTools\IO\CsvWriter;
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+// get the name of the currently executed tool
+$tool = basename($argv[0]);
+// read the input files into model objects
+$inputTables = [];
+foreach (CsvMergeArgumentConverter::getInputStreams() as $inputStream) {
+    $inputTables[] = CsvReader::read($inputStream);
+}
+// execute the merge processing
+$processor = new CommandProcessorLocator()->getProcessorByTag($tool);
+$config = CsvMergeArgumentConverter::extractTableProcessorConfig();
+$outputTable = $processor->configure($config)->process(...$inputTables);
+// write the results to output
+CsvWriter::write($outputTable, CsvMergeArgumentConverter::getOutputStream());
