@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Carpatin\TableTools\Command;
 
-use Carpatin\TableTools\TableProcessor\ColumnReorderer;
-use Carpatin\TableTools\TableProcessor\ColumnSignatureVerifier;
-use Carpatin\TableTools\TableProcessor\ColumnSigner;
-use Carpatin\TableTools\TableProcessor\TableHeaderPrepender;
-use Carpatin\TableTools\TableProcessor\TableMerger;
-use Carpatin\TableTools\TableProcessorInterface;
+use Carpatin\TableTools\TableProcessor\Processor\ColumnSignatureVerifier;
+use Carpatin\TableTools\TableProcessor\Processor\ColumnSigner;
+use Carpatin\TableTools\TableProcessor\Processor\TableHeaderPrepender;
+use Carpatin\TableTools\TableProcessor\Processor\TableMerger;
+use Carpatin\TableTools\TableProcessor\TableProcessorInterface;
 use Ds\Map;
 
 class CommandProcessorLocator
 {
     private const array COMMANDS_TO_CLASSES = [
-        'csv-column-reorder'     => ColumnReorderer::class,
         'csv-column-sign'        => ColumnSigner::class,
         'csv-column-sign-verify' => ColumnSignatureVerifier::class,
         'csv-headers-prepend'    => TableHeaderPrepender::class,
@@ -29,14 +27,14 @@ class CommandProcessorLocator
         $this->processors = new Map();
     }
 
-    public function getProcessorByTag(string $tag): TableProcessorInterface
+    public function getProcessorByTool(string $tool): TableProcessorInterface
     {
-        if ($this->processors->hasKey($tag)) {
-            return $this->processors[$tag];
+        if ($this->processors->hasKey($tool)) {
+            return $this->processors[$tool];
         }
-        $class = self::COMMANDS_TO_CLASSES[$tag];
-        $this->processors[$tag] = new $class();
+        $class = self::COMMANDS_TO_CLASSES[$tool];
+        $this->processors[$tool] = new $class();
 
-        return $this->processors[$tag];
+        return $this->processors[$tool];
     }
 }

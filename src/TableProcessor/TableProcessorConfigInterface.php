@@ -6,5 +6,5 @@ namespace Carpatin\TableTools\TableProcessor;
 
 interface TableProcessorConfigInterface
 {
-    // Empty
+    //
 }

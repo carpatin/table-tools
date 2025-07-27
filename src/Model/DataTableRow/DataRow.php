@@ -2,27 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Carpatin\TableTools\Model;
+namespace Carpatin\TableTools\Model\DataTableRow;
 
+use Carpatin\TableTools\Model\DataTable;
+use Carpatin\TableTools\Model\DataTableRow;
 use Ds\Map;
 use Webmozart\Assert\Assert;
 
-class DataRow
+/**
+ * Models a data table data row.
+ */
+class DataRow extends DataTableRow
 {
     private function __construct(
-        private Map $row,
+        private readonly Map $row,
     ) {
         //
     }
 
     public static function fromArray(array $rowValues, DataTable $table): static
     {
-        $columnNames = $table->getColumnNames();
-        Assert::eq(count($rowValues), $columnNames->count());
+        $headerRow = $table->getHeaderRow();
+        Assert::eq(count($rowValues), $headerRow->count());
 
         $rowData = new Map();
         foreach (array_values($rowValues) as $i => $columnValue) {
-            $rowData[$columnNames[$i]] = $columnValue;
+            $rowData[$headerRow[$i]] = $columnValue;
         }
 
         return new static($rowData);

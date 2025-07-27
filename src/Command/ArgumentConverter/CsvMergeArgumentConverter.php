@@ -4,45 +4,28 @@ declare(strict_types=1);
 
 namespace Carpatin\TableTools\Command\ArgumentConverter;
 
-use Carpatin\TableTools\Command\ArgumentConverter;
-use Carpatin\TableTools\TableProcessor\Config\TableMergerConfig;
+use Carpatin\TableTools\IO\GetOpt;
+use Carpatin\TableTools\TableProcessor\TableProcessorConfigInterface;
 
-class CsvMergeArgumentConverter implements ArgumentConverter
+class CsvMergeArgumentConverter extends OptionsCompatibleArgumentConverter
 {
-    public static function getInputStreams(): array
+    /**
+     * Getter for the tool's --ignore-headers boolean flag
+     */
+    public static function hasIgnoreHeaders(): bool
     {
-        // TODO: temporary implementation below
-        $a = [
-            ['name', 'age', 'occupation'],
-            ['Dan', 38, 'Developer'],
-        ];
-        $sa = fopen('php://memory', 'wb');
-        foreach ($a as $row) {
-            fputcsv($sa, $row, ',', '"', '\\');
-        }
-        rewind($sa);
-
-        $b = [
-            ['name', 'age', 'occupation'],
-            ['Mihai', 31, 'Tester'],
-        ];
-        $sb = fopen('php://memory', 'wb');
-        foreach ($b as $row) {
-            fputcsv($sb, $row, ',', '"', '\\');
-        }
-        rewind($sb);
-
-        return [$sa, $sb];
+        return array_key_exists('ignore-headers', GetOpt::getParsedOptions());
     }
 
-    public static function getOutputStream()
+    public static function extractTableProcessorConfig(): ?TableProcessorConfigInterface
     {
-        return STDOUT;
-    }
-
-    public static function extractTableProcessorConfig(): ?TableMergerConfig
-    {
-        // TODO: return an object of TableMergerConfig if necessary
+        // no config necessary for this processing
         return null;
+    }
+
+    protected static function extraLongOptions(): array
+    {
+        // extra long option for the boolean flag to ignore the header rows in the merged files
+        return ['ignore-headers'];
     }
 }

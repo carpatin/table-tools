@@ -4,64 +4,69 @@ declare(strict_types=1);
 
 namespace Carpatin\TableTools\Model;
 
+use Carpatin\TableTools\Model\DataTableRow\DataRow;
+use Carpatin\TableTools\Model\DataTableRow\HeaderRow;
 use Ds\Deque;
 use Ds\Vector;
-use Illuminate\Support\Arr;
 use IteratorAggregate;
 use Traversable;
 use Webmozart\Assert\Assert;
 
+/**
+ * Models a data table that consists of a header row and data rows
+ */
 class DataTable implements IteratorAggregate
 {
     /**
      * Collection of rows in the data table.
-     * @var Deque<DataRow>
+     * @var Deque<DataTableRow>
      */
-    private Deque $rows;
+    private Deque $dataRows;
 
     private function __construct(
-        /**
-         * The column names of the data table.
-         * @var Vector<string>
-         */
-        private readonly Vector $columnNames,
+        private readonly HeaderRow $headerRow,
     ) {
-        $this->rows = new Deque();
+        $this->dataRows = new Deque();
     }
 
     /**
      * Factory method that creates an empty data table.
      */
-    public static function createEmpty(array|Vector $columnNames): static
+    public static function createEmpty(array|Vector|HeaderRow $headers): static
     {
-        if (!$columnNames instanceof Vector) {
-            $columnNames = new Vector($columnNames);
+        // handle the case when a header row is already available at table creation (perhaps from another table)
+        if ($headers instanceof HeaderRow) {
+            return new static($headers->copy());
         }
 
-        return new static($columnNames);
+        // handle the case when the headers are provided as a list, either as an array, or as a Vector
+        if (!$headers instanceof Vector) {
+            $headers = new Vector($headers);
+        }
+
+        return new static(HeaderRow::fromVector($headers));
     }
 
     /**
      * Factory method that creates a data table from a plain two-dimensional array.
      */
-    public static function createFromArray(array $table): static
+    public static function createFromArray(array $table, bool $ignoreHeaders = false): static
     {
         // we can safely create an instance for a non-empty input
         Assert::notEmpty($table);
 
         // handle the header row, if present
-        $candidateHeaders = array_shift($table);
-        $validHeaders = Arr::where($candidateHeaders, static fn($header) => is_string($header));
-        if (count($validHeaders) === count($candidateHeaders)) {
-            // we identified what seems to be a valid headers row, will use them
-            $columnNames = new Vector($validHeaders);
-        } else {
+
+        if ($ignoreHeaders) {
             // as fallback, we use the numeric keys as column names
-            $columnNames = new Vector(array_map(static fn($value) => (string)$value, array_keys($candidateHeaders)));
+            $headerRow = HeaderRow::fromDefaults(count(reset($table)));
+        } else {
+            // we use the first row as headers
+            $headerRow = HeaderRow::fromVector(new Vector(array_shift($table)));
         }
 
         // create the data table and populate with rows
-        $instance = new static(new Vector($columnNames));
+        $instance = new static($headerRow);
         foreach ($table as $row) {
             $instance->appendRow(DataRow::fromArray($row, $instance));
         }
@@ -71,17 +76,33 @@ class DataTable implements IteratorAggregate
 
     public function getIterator(): Traversable
     {
-        return $this->rows->getIterator();
+        $generator = function () {
+            if (!$this->headerRow->isDefault()) {
+                yield $this->headerRow;
+            }
+            foreach ($this->dataRows as $dataRow) {
+                yield $dataRow;
+            }
+        };
+
+        return $generator();
     }
 
-    public function getColumnNames(): Vector
+    public function getHeaderRow(): HeaderRow
     {
-        return $this->columnNames;
+        return $this->headerRow;
+    }
+
+    public function prependRow(DataRow $dataRow)
+    {
+        $this->dataRows->unshift($dataRow);
+
+        return $this;
     }
 
     public function appendRow(DataRow $dataRow): static
     {
-        $this->rows->push($dataRow);
+        $this->dataRows->push($dataRow);
 
         return $this;
     }
@@ -89,8 +110,7 @@ class DataTable implements IteratorAggregate
     public function appendRowsFrom(DataTable $table): static
     {
         Assert::true($this->isMergeableWith($table), 'Tables are not compatible');
-
-        foreach ($table as $row) {
+        foreach ($table->dataRows as $row) {
             $this->appendRow($row);
         }
 
@@ -99,7 +119,17 @@ class DataTable implements IteratorAggregate
 
     private function isMergeableWith(DataTable $table): bool
     {
-        // two tables are mergeable only when they have the same columns in the same order
-        return $this->columnNames->toArray() === $table->columnNames->toArray();
+        // two tables with different number of columns are not mergeable
+        if ($this->headerRow->count() !== $table->headerRow->count()) {
+            return false;
+        }
+
+        // we allow merging with a table having default column names ("1","2",...)
+        if ($table->headerRow->isDefault()) {
+            return true;
+        }
+
+        // two tables are mergeable only when they have the same header
+        return $this->headerRow->toArray() === $table->headerRow->toArray();
     }
 }
