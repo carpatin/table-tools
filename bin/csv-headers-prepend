@@ -21,7 +21,7 @@ try {
         $inputTables[] = CsvReader::read($inputStream, true);
     }
 
-    // execute the processor login on all input tables
+    // execute the prepended header logic on all input tables
     $processor = new CommandProcessorLocator()->getProcessorByTool($tool);
     $config = CsvHeadersPrependArgumentConverter::extractTableProcessorConfig();
     $outputTables = $processor->configure($config)->process(...$inputTables);
@@ -30,6 +30,8 @@ try {
     $outputStream = CsvHeadersPrependArgumentConverter::getOutputStreams()[0];
     foreach ($outputTables as $index => $outputTable) {
         CsvWriter::write($outputTable, $outputStream);
+        // uncomment below to test output to JSON
+        // JsonWriter::write($outputTable, $outputStream);
     }
 } catch (Throwable $e) {
     echo $e->getMessage().PHP_EOL;
