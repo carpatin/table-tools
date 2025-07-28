@@ -10,6 +10,11 @@ use InvalidArgumentException;
 
 class CsvHeadersPrependArgumentConverter extends PipingCompatibleArgumentConverter
 {
+    public static function initOptions(): void
+    {
+        GetOpt::initOptions('h:', ['headers:', 'output-format:']);
+    }
+
     public static function extractTableProcessorConfig(): ?TableHeaderPrependerConfig
     {
         // extracts the h/headers option as configured through initialization
@@ -21,11 +26,5 @@ class CsvHeadersPrependArgumentConverter extends PipingCompatibleArgumentConvert
         $outputFormat = $options['output-format'] ?? TableHeaderPrependerConfig::OUTPUT_FORMAT_CSV;
 
         return new TableHeaderPrependerConfig(explode(',', $headers), $outputFormat);
-    }
-
-    public static function initOptions(): void
-    {
-        // the only getopt() option is the list of headers, comma separated, either short or long version
-        GetOpt::initOptions('h:', ['headers:', 'output-format:']);
     }
 }

@@ -28,7 +28,7 @@ try {
     $config = CsvHeadersPrependArgumentConverter::extractTableProcessorConfig();
     $outputTables = $processor->configure($config)->process(...$inputTables);
 
-    // write the resulted outputTables to output streams
+    // write the resulted output tables to output streams
     $outputStream = CsvHeadersPrependArgumentConverter::getOutputStreams()[0];
     foreach ($outputTables as $outputTable) {
         if ($config->getOutputFormat() === TableHeaderPrependerConfig::OUTPUT_FORMAT_CSV) {

@@ -10,6 +10,7 @@ use Ds\Vector;
 
 /**
  * Models a data table headers row.
+ * The objects of this class are immutable.
  */
 readonly class HeaderRow implements Countable, ArrayAccess
 {
@@ -38,9 +39,20 @@ readonly class HeaderRow implements Countable, ArrayAccess
         return new static($this->row->copy(), $this->isDefault);
     }
 
-    public function isDefault(): bool
+    public function withAddedColumn(string $column): static
     {
-        return $this->isDefault;
+        $row = $this->row->copy();
+        $row->push($column);
+
+        return new static($row);
+    }
+
+    public function withRemovedColumn(string $column): static
+    {
+        $row = $this->row->copy();
+        $row->remove($row->find($column));
+
+        return new static($row);
     }
 
     public function offsetExists(mixed $offset): bool
@@ -66,6 +78,11 @@ readonly class HeaderRow implements Countable, ArrayAccess
     public function count(): int
     {
         return $this->row->count();
+    }
+
+    public function isDefault(): bool
+    {
+        return $this->isDefault;
     }
 
     public function toArray(): array

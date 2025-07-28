@@ -88,6 +88,11 @@ class DataTable implements IteratorAggregate
         return $generator();
     }
 
+    public function getDataRowsIterator(): Traversable
+    {
+        return $this->dataRows->getIterator();
+    }
+
     public function getHeaderRow(): HeaderRow
     {
         return $this->headerRow;

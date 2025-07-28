@@ -1,6 +1,38 @@
 #!/usr/local/bin/php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+use Carpatin\TableTools\Command\ArgumentConverter\CsvColumnSignVerifyArgumentConverter;
+use Carpatin\TableTools\Command\CommandProcessorLocator;
+use Carpatin\TableTools\IO\CsvReader;
+use Carpatin\TableTools\IO\CsvWriter;
 
-// TODO
+require_once __DIR__.'/../vendor/autoload.php';
+
+
+// get the name of the currently executed tool
+$tool = basename($argv[0]);
+
+try {
+    // initialize the CLI options parsing
+    CsvColumnSignVerifyArgumentConverter::initOptions();
+
+    // read from input streams into data tables
+    $inputTables = [];
+    foreach (CsvColumnSignVerifyArgumentConverter::getInputStreams() as $inputStream) {
+        $inputTables[] = CsvReader::read($inputStream);
+    }
+
+    // execute the signature verification and removal processor
+    $processor = new CommandProcessorLocator()->getProcessorByTool($tool);
+    $config = CsvColumnSignVerifyArgumentConverter::extractTableProcessorConfig();
+    $outputTables = $processor->configure($config)->process(...$inputTables);
+
+    // write the resulted output tables to output streams
+    $outputStream = CsvColumnSignVerifyArgumentConverter::getOutputStreams()[0];
+    foreach ($outputTables as $outputTable) {
+        CsvWriter::write($outputTable, $outputStream);
+    }
+} catch (Throwable $e) {
+    echo $e->getMessage().PHP_EOL;
+    exit(1);
+}
