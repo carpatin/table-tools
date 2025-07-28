@@ -9,7 +9,7 @@ use Carpatin\TableTools\Model\DataTable;
 /**
  * Reads table data from a CSV stream to a DataTable
  */
-class CsvReader
+final class CsvReader
 {
     public static function read($inputStream, bool $ignoreHeaders = false): DataTable
     {

@@ -8,7 +8,7 @@ namespace Carpatin\TableTools\IO;
  * Acts as storage of getopt() results throughout the execution, in order for the options to be accessed from
  * multiple places in the code.
  */
-class GetOpt
+final class GetOpt
 {
     private static array $options;
 

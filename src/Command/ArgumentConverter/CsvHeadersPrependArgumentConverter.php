@@ -18,13 +18,14 @@ class CsvHeadersPrependArgumentConverter extends PipingCompatibleArgumentConvert
         if (null === $headers) {
             throw new InvalidArgumentException('Headers must be provided');
         }
+        $outputFormat = $options['output-format'] ?? TableHeaderPrependerConfig::OUTPUT_FORMAT_CSV;
 
-        return new TableHeaderPrependerConfig(explode(',', $headers));
+        return new TableHeaderPrependerConfig(explode(',', $headers), $outputFormat);
     }
 
     public static function initOptions(): void
     {
         // the only getopt() option is the list of headers, comma separated, either short or long version
-        GetOpt::initOptions('h:', ['headers:']);
+        GetOpt::initOptions('h:', ['headers:', 'output-format:']);
     }
 }

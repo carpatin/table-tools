@@ -5,6 +5,8 @@ use Carpatin\TableTools\Command\ArgumentConverter\CsvHeadersPrependArgumentConve
 use Carpatin\TableTools\Command\CommandProcessorLocator;
 use Carpatin\TableTools\IO\CsvReader;
 use Carpatin\TableTools\IO\CsvWriter;
+use Carpatin\TableTools\IO\JsonWriter;
+use Carpatin\TableTools\TableProcessor\Config\TableHeaderPrependerConfig;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
@@ -28,10 +30,12 @@ try {
 
     // write the resulted outputTables to output streams
     $outputStream = CsvHeadersPrependArgumentConverter::getOutputStreams()[0];
-    foreach ($outputTables as $index => $outputTable) {
-        CsvWriter::write($outputTable, $outputStream);
-        // uncomment below to test output to JSON
-        // JsonWriter::write($outputTable, $outputStream);
+    foreach ($outputTables as $outputTable) {
+        if ($config->getOutputFormat() === TableHeaderPrependerConfig::OUTPUT_FORMAT_CSV) {
+            CsvWriter::write($outputTable, $outputStream);
+        } elseif ($config->getOutputFormat() === TableHeaderPrependerConfig::OUTPUT_FORMAT_JSON) {
+            JsonWriter::write($outputTable, $outputStream);
+        }
     }
 } catch (Throwable $e) {
     echo $e->getMessage().PHP_EOL;

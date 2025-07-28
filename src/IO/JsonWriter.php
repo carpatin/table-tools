@@ -8,7 +8,7 @@ use Carpatin\TableTools\Model\DataTable;
 use Carpatin\TableTools\Model\DataTableRow\DataRow;
 use JsonException;
 
-class JsonWriter
+final class JsonWriter
 {
     /**
      * @throws JsonException
