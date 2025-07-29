@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Carpatin\TableTools\Controller;
 
-use Carpatin\TableTools\Command\CommandProcessorLocator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ToolsController extends AbstractController
 {
     #[Route('/prepend-header', name: 'table_tools_prepend_header', methods: ['POST'])]
-    public function prependHeader(CommandProcessorLocator $locator): Response
+    public function prependHeader(): Response
     {
         // TODO
 
@@ -19,7 +20,7 @@ final class ToolsController extends AbstractController
     }
 
     #[Route('/merge', name: 'table_tools_merge', methods: ['POST'])]
-    public function mergeTables(CommandProcessorLocator $locator): Response
+    public function mergeTables(): Response
     {
         // TODO
 

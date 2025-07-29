@@ -36,7 +36,7 @@ class DataTable implements IteratorAggregate
     {
         // handle the case when a header row is already available at table creation (perhaps from another table)
         if ($headers instanceof HeaderRow) {
-            return new static($headers->copy());
+            return new static($headers);
         }
 
         // handle the case when the headers are provided as a list, either as an array, or as a Vector
@@ -50,14 +50,13 @@ class DataTable implements IteratorAggregate
     /**
      * Factory method that creates a data table from a plain two-dimensional array.
      */
-    public static function createFromArray(array $table, bool $ignoreHeaders = false): static
+    public static function createFromArray(array $table, bool $hasNoHeaders = false): static
     {
         // we can safely create an instance for a non-empty input
         Assert::notEmpty($table);
 
         // handle the header row, if present
-
-        if ($ignoreHeaders) {
+        if ($hasNoHeaders) {
             // as fallback, we use the numeric keys as column names
             $headerRow = HeaderRow::fromDefaults(count(reset($table)));
         } else {
@@ -96,13 +95,6 @@ class DataTable implements IteratorAggregate
     public function getHeaderRow(): HeaderRow
     {
         return $this->headerRow;
-    }
-
-    public function prependRow(DataRow $dataRow)
-    {
-        $this->dataRows->unshift($dataRow);
-
-        return $this;
     }
 
     public function appendRow(DataRow $dataRow): static

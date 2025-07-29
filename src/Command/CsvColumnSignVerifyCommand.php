@@ -60,7 +60,7 @@ class CsvColumnSignVerifyCommand extends Command
     {
         $column = $input->getOption('column');
         if (null === $column) {
-            throw new InvalidArgumentException('The `column` command option is missing');
+            throw new InvalidArgumentException('The `column` option is missing');
         }
         $signatureColumn = $column.'_signature';
 

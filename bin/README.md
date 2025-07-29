@@ -1,31 +1,32 @@
 Prepend CSV header, piping compatible:
 
 ```
-> cat csv/header-prepend.csv | ./csv-headers-prepend --headers name,age,occupation,location
+> cat csv/header-prepend.csv | ./console app:csv:prepend-header --headers name,age,occupation,location
 ```
 
+or with a short option for headers:
+
 ```
-> cat csv/header-prepend.csv | ./csv-headers-prepend -h name,age,occupation,location
+> cat csv/header-prepend.csv | ./console app:csv:prepend-header -t name,age,occupation,location
 ```
 
 Merge CSVs with inputs/output given as options:
 
 ```
-> ./csv-merge --input1 csv/merge1.csv --input2 csv/merge2.csv --output1 merged.csv 
+> ./console app:csv:merge csv/merge1.csv csv/merge2.csv --output merged.csv
 ```
 
 or with inputs as options and output to STDOUT:
 
 ```
-> ./csv-merge --input1 csv/merge1.csv --input2 csv/merge2.csv
+> ./console app:csv:merge csv/merge1.csv csv/merge2.csv
 ```
 
 Merge headerless tables, then prepend headers:
 
 ```
- ./csv-merge --input1 csv/merge_prepend1.csv --input2 csv/merge_prepend2.csv --ignore-headers | ./csv-headers-prepend --headers name,age,occupation,location
+ ./console app:csv:merge csv/merge_prepend1.csv csv/merge_prepend2.csv --no-headers | ./console app:csv:prepend-header --headers name,age,occupation,location
 ```
-
 
 For generating PEM keys, you would use:
 ```

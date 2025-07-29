@@ -7,6 +7,7 @@ namespace Carpatin\TableTools\Model\DataTableRow;
 use ArrayAccess;
 use Countable;
 use Ds\Vector;
+use LogicException;
 
 /**
  * Models a data table headers row.
@@ -32,11 +33,6 @@ readonly class HeaderRow implements Countable, ArrayAccess
     public static function fromVector(Vector $row): static
     {
         return new static($row);
-    }
-
-    public function copy(): static
-    {
-        return new static($this->row->copy(), $this->isDefault);
     }
 
     public function withAddedColumn(string $column): static
@@ -67,12 +63,12 @@ readonly class HeaderRow implements Countable, ArrayAccess
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->row->offsetSet($offset, $value);
+        throw new LogicException('Operation not permitted');
     }
 
     public function offsetUnset(mixed $offset): void
     {
-        $this->row->offsetUnset($offset);
+        throw new LogicException('Operation not permitted');
     }
 
     public function count(): int

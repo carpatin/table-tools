@@ -13,7 +13,7 @@ final class JsonWriter
     /**
      * @throws JsonException
      */
-    public static function write(DataTable $table, $outputStream): void
+    public function write(DataTable $table, $outputStream): void
     {
         $keys = $table->getHeaderRow()->toArray();
         $skipHeaders = !$table->getHeaderRow()->isDefault();
@@ -28,9 +28,12 @@ final class JsonWriter
         }
     }
 
-    public static function writeClose(DataTable $table, $outputStream): void
+    /**
+     * @throws JsonException
+     */
+    public function writeClose(DataTable $table, $outputStream): void
     {
-        self::write($table, $outputStream);
+        $this->write($table, $outputStream);
         fclose($outputStream);
     }
 }

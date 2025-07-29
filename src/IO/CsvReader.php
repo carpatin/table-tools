@@ -11,14 +11,14 @@ use Carpatin\TableTools\Model\DataTable;
  */
 final class CsvReader
 {
-    public function read($inputStream, bool $ignoreHeaders = false): DataTable
+    public function read($inputStream, bool $hasNoHeaders = false): DataTable
     {
         $data = [];
         while (($row = fgetcsv($inputStream, null, ',', '"', '\\')) !== false) {
             $data[] = $row;
         }
 
-        return DataTable::createFromArray($data, $ignoreHeaders);
+        return DataTable::createFromArray($data, $hasNoHeaders);
     }
 
     public function readClose(mixed $inputStream, bool $ignoreHeaders = false): DataTable
