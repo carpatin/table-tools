@@ -36,18 +36,18 @@ But they are already provided in `keys` dir.
 
 To sign a CSV file column:
 ```
-cat csv/to_sign.csv | ./csv-column-sign -c grade -k 'keys/private_key.pem' > signed.csv
+cat csv/to_sign.csv | ./console app:csv:column-sign -c grade --private-key keys/private_key.pem > signed.csv
 ```
 Then, without altering signed.csv:
 ```
-cat signed.csv | ./csv-column-sign-verify -c grade -k 'keys/public_key.pem'
+cat signed.csv | ./console app:csv:column-sign-verify -c grade -k 'keys/public_key.pem'
 ```
 The out will be the original CSV data, just as `to_sign.csv`.
 
 
 But if the contents of the `grade` column of the rows in `signed.csv` is altered and:
 ```
-cat signed.csv | ./csv-column-sign-verify -c grade -k 'keys/public_key.pem'
+cat signed.csv | ./console app:csv:column-sign-verify-c grade -k 'keys/public_key.pem'
 ```
 Will output something such as:
 ```

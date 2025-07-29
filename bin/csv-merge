@@ -18,7 +18,7 @@ try {
     // read the input files into model objects
     $inputTables = [];
     foreach (CsvMergeArgumentConverter::getInputStreams() as $inputStream) {
-        $inputTables[] = CsvReader::readClose($inputStream, CsvMergeArgumentConverter::hasIgnoreHeaders());
+        $inputTables[] = new CsvReader()->readClose($inputStream, CsvMergeArgumentConverter::hasIgnoreHeaders());
     }
 
     // execute the merge processing
@@ -30,9 +30,9 @@ try {
     foreach ($outputTables as $index => $outputTable) {
         $outputStream = $outputStreams[$index] ?? STDOUT;
         if ($outputStream !== STDOUT) {
-            CsvWriter::writeClose($outputTable, $outputStream);
+            new CsvWriter()->writeClose($outputTable, $outputStream);
         } else {
-            CsvWriter::write($outputTable, $outputStream);
+            new CsvWriter()->write($outputTable, $outputStream);
         }
     }
 } catch (Throwable $e) {

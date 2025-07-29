@@ -11,7 +11,7 @@ use Carpatin\TableTools\Model\DataTable;
  */
 final class CsvReader
 {
-    public static function read($inputStream, bool $ignoreHeaders = false): DataTable
+    public function read($inputStream, bool $ignoreHeaders = false): DataTable
     {
         $data = [];
         while (($row = fgetcsv($inputStream, null, ',', '"', '\\')) !== false) {
@@ -21,9 +21,9 @@ final class CsvReader
         return DataTable::createFromArray($data, $ignoreHeaders);
     }
 
-    public static function readClose(mixed $inputStream, bool $ignoreHeaders = false): DataTable
+    public function readClose(mixed $inputStream, bool $ignoreHeaders = false): DataTable
     {
-        $dataTable = self::read($inputStream, $ignoreHeaders);
+        $dataTable = $this->read($inputStream, $ignoreHeaders);
         fclose($inputStream);
 
         return $dataTable;

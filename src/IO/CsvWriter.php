@@ -13,7 +13,7 @@ use Carpatin\TableTools\Model\DataTableRow\HeaderRow;
  */
 final class CsvWriter
 {
-    public static function write(DataTable $table, $outputStream): void
+    public function write(DataTable $table, $outputStream): void
     {
         /** @var DataRow|HeaderRow $row */
         foreach ($table as $row) {
@@ -21,9 +21,9 @@ final class CsvWriter
         }
     }
 
-    public static function writeClose(DataTable $table, $outputStream): void
+    public function writeClose(DataTable $table, $outputStream): void
     {
-        self::write($table, $outputStream);
+        $this->write($table, $outputStream);
         fclose($outputStream);
     }
 }

@@ -20,7 +20,7 @@ try {
     // read from input streams into data tables
     $inputTables = [];
     foreach (CsvHeadersPrependArgumentConverter::getInputStreams() as $inputStream) {
-        $inputTables[] = CsvReader::read($inputStream, true);
+        $inputTables[] = new CsvReader()->read($inputStream, true);
     }
 
     // execute the prepended header logic on all input tables
@@ -32,7 +32,7 @@ try {
     $outputStream = CsvHeadersPrependArgumentConverter::getOutputStreams()[0];
     foreach ($outputTables as $outputTable) {
         if ($config->getOutputFormat() === TableHeaderPrependerConfig::OUTPUT_FORMAT_CSV) {
-            CsvWriter::write($outputTable, $outputStream);
+            new CsvWriter()->write($outputTable, $outputStream);
         } elseif ($config->getOutputFormat() === TableHeaderPrependerConfig::OUTPUT_FORMAT_JSON) {
             JsonWriter::write($outputTable, $outputStream);
         }
